@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Vector;
+
 import connection.Connect;
 
 public class Transaction {
@@ -12,21 +14,26 @@ public class Transaction {
 	private String paymentType;
 	private Connect conn = Connect.getConnection();
 	
-	public Transaction(int employeeId, String paymentType) {
+	public Transaction(int id, int employeeId, Date purchaseDate, String paymentType) {
 		super();
+		this.id = id;
 		this.employeeId = employeeId;
-		this.purchaseDate = new Date(System.currentTimeMillis());
+		this.purchaseDate = purchaseDate;
 		this.paymentType = paymentType;
 	}
+	
 	public int getEmployeeId() {
 		return employeeId;
 	}
+	
 	public Date getPurchaseDate() {
 		return purchaseDate;
 	}
+	
 	public String getPaymentType() {
 		return paymentType;
 	}
+	
 	public Transaction addTransaction() throws SQLException {
 		String query = "INSERT INTO transaction_header(purchase_date, employee_id, payment_type) VALUES(?, ?, ?)";
 		PreparedStatement ps = conn.prepareStatement(query);
@@ -37,9 +44,21 @@ public class Transaction {
 		return this;
 	}
 	
-	public ResultSet getAllTransactions() {
+	public Vector<Transaction> getAllTransactions() {
 		ResultSet rs;
 		rs = conn.executeQuery("SELECT * FROM transaction_header");
-		return rs;
+		Vector<Transaction> transactions = new Vector<>();
+		try {
+			while(rs.next()) 
+				transactions.add(new Transaction(rs.getInt("id"), rs.getInt("employee_id"), rs.getDate("purchase_date"), rs.getString("payment_type")));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return transactions;
 	}
+	
+//	public Vector<Transaction> getTransactionReport(Date date) {
+//		
+//	}
 }

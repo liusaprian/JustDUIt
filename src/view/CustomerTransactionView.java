@@ -8,21 +8,29 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import connection.Connect;
 
-public class CustomerTransactionView extends JFrame implements ActionListener {
-	private JPanel mainPanel, tablePanel, footerPanel, textPanel, buttonPanel;
+public class CustomerTransactionView extends JFrame {
+	private JPanel mainPanel, headerPanel, tablePanel, footerPanel;
 	private JTable table;
 	private JScrollPane scroll;
 	private Connect connect;
+	private JButton cart, logout, payment;
+	private JLabel cartItemCount;
 	
 	private static CustomerTransactionView view = null;
 	
@@ -37,15 +45,21 @@ public class CustomerTransactionView extends JFrame implements ActionListener {
 		setSize(1000, 600);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("Transaction");
+		setTitle("Add to Cart Form");
 		
 		connect = Connect.getConnection();
 		
 		mainPanel = new JPanel(new BorderLayout());
 		tablePanel = new JPanel(new GridLayout(1,1));
-		footerPanel = new JPanel(new GridLayout(1,1));
-		textPanel = new JPanel();
-		buttonPanel = new JPanel();
+		headerPanel = new JPanel(new GridLayout(1,1));
+		footerPanel = new JPanel(new GridLayout(1,2));
+		
+		cart = new JButton("Cart");
+		logout = new JButton("Logout");
+		payment = new JButton("Pay");
+		
+		cartItemCount = new JLabel();
+		cartItemCount.setHorizontalAlignment(JLabel.CENTER);
 		
 		table = new JTable();
 		prepareTableModel();
@@ -55,10 +69,16 @@ public class CustomerTransactionView extends JFrame implements ActionListener {
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		tablePanel.add(scroll);
+		table.getColumn("action").setCellRenderer(new ButtonRenderer());
+		table.getColumn("action").setCellEditor(new ButtonEditor(new JTextField()));
 		
-		footerPanel.add(textPanel);
-		footerPanel.add(buttonPanel);
+		footerPanel.add(cartItemCount);
+		footerPanel.add(payment);
 		
+		headerPanel.add(cart);
+		headerPanel.add(logout);
+		
+		mainPanel.add(headerPanel, BorderLayout.NORTH);
 		mainPanel.add(tablePanel, BorderLayout.CENTER);
 		mainPanel.add(footerPanel, BorderLayout.SOUTH);
 		add(mainPanel);
@@ -78,7 +98,8 @@ public class CustomerTransactionView extends JFrame implements ActionListener {
 			for(int i = 1; i <= rsmd.getColumnCount(); i++) {
 				dtm.addColumn(rsmd.getColumnName(i));
 			}
-			dtm.addColumn("Action");
+			cartItemCount.setText(String.valueOf(rsmd.getColumnCount()) + " items in your cart");
+			dtm.addColumn("action");
 			while(rs.next()) {
 				dtm.addRow(new Object[] {
 						rs.getInt("id"),
@@ -88,7 +109,6 @@ public class CustomerTransactionView extends JFrame implements ActionListener {
 						rs.getInt("stock"),
 				});
 			}
-			table.getColumn("Action").setCellRenderer(new ButtonRenderer());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -96,20 +116,67 @@ public class CustomerTransactionView extends JFrame implements ActionListener {
 		table.setModel(dtm);
 	}
 	
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	class ButtonRenderer extends JButton implements TableCellRenderer {
 		public ButtonRenderer() {
 		  setOpaque(true);
 		}
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		  setText((value == null) ? "Modify" : value.toString());
+		  setText((value == null) ? "Buy" : value.toString());
 		  return this;
+		}
+	}
+	
+	class ButtonEditor extends DefaultCellEditor {
+		protected JButton btn;
+		private String label;
+		private boolean clicked;
+		private int row;
+		
+		public ButtonEditor(JTextField textField) {
+			super(textField);
+			btn = new JButton();
+			btn.setOpaque(true);
+			btn.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					fireEditingStopped();
+				}
+			});
+		}
+		
+		@Override
+		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row,
+				int column) {
+			label = (value == null) ? "Buy" : value.toString();
+			btn.setText(label);
+			clicked = true;
+			this.row = row;
+			return btn;
+		}
+		
+		@Override
+		public Object getCellEditorValue() {
+			// TODO Auto-generated method stub
+			if(clicked) {
+				JOptionPane.showMessageDialog(btn, table.getValueAt(row, 0));
+			}
+			clicked = false;
+			return new String(label);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			// TODO Auto-generated method stub
+			clicked = false;
+			return super.stopCellEditing();
+		}
+		
+		@Override
+		protected void fireEditingStopped() {
+			// TODO Auto-generated method stub
+			super.fireEditingStopped();
 		}
 	}
 
