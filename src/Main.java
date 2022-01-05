@@ -5,7 +5,7 @@ public class Main {
 	private TransactionController transactionController = TransactionController.getInstance();
 
 	public Main() {
-		transactionController.returnView();
+		transactionController.returnAdminTransactionReportView();
 	}
 
 	public static void main(String[] args) {

@@ -22,6 +22,14 @@ public class Transaction {
 		this.paymentType = paymentType;
 	}
 	
+	public Transaction() {
+		
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
 	public int getEmployeeId() {
 		return employeeId;
 	}
@@ -35,7 +43,7 @@ public class Transaction {
 	}
 	
 	public Transaction addTransaction() throws SQLException {
-		String query = "INSERT INTO transaction_header(purchase_date, employee_id, payment_type) VALUES(?, ?, ?)";
+		String query = "INSERT INTO transaction(purchase_date, employee_id, payment_type) VALUES(?, ?, ?)";
 		PreparedStatement ps = conn.prepareStatement(query);
 		ps.setDate(1, purchaseDate);
 		ps.setInt(2, employeeId);
@@ -46,7 +54,7 @@ public class Transaction {
 	
 	public Vector<Transaction> getAllTransactions() {
 		ResultSet rs;
-		rs = conn.executeQuery("SELECT * FROM transaction_header");
+		rs = conn.executeQuery("SELECT * FROM transaction");
 		Vector<Transaction> transactions = new Vector<>();
 		try {
 			while(rs.next()) 
