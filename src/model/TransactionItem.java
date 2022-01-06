@@ -13,7 +13,6 @@ public class TransactionItem {
 	private Connect conn = Connect.getConnection();
 	
 	public TransactionItem(int transactionId, int productId, int quantity) {
-		super();
 		this.transactionId = transactionId;
 		this.productId = productId;
 		this.quantity = quantity;

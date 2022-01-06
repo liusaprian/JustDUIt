@@ -8,15 +8,11 @@ import view.CustomerTransactionView;
 public class TransactionController {
 
 	private static TransactionController controller = null;
-	private CustomerTransactionView view = CustomerTransactionView.getInstance();
+	private CustomerTransactionView customerView = CustomerTransactionView.getInstance();
 	private TransactionController() {}
 
 	public static TransactionController getInstance() {
 		if(controller == null) controller = new TransactionController();
 		return controller;
-	}
-	
-	public void returnView() {
-		view.showTransactionCustomer();
 	}
 }

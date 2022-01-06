@@ -1,11 +1,11 @@
-import controller.TransactionController;
+import controller.CartItemController;
 
 public class Main {
 	
-	private TransactionController transactionController = TransactionController.getInstance();
+	private CartItemController cartController = CartItemController.getInstance();
 
 	public Main() {
-		transactionController.returnView();
+		cartController.viewAddToCartForm();
 	}
 
 	public static void main(String[] args) {

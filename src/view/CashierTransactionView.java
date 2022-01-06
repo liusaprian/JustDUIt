@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -21,24 +20,22 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-
 import connection.Connect;
-import controller.CartItemController;
 
-public class CustomerTransactionView extends JFrame {
-	private JPanel mainPanel, headerPanel, tablePanel;
+public class CashierTransactionView extends JFrame {
+	private JPanel mainPanel, headerPanel, tablePanel, footerPanel;
 	private JTable table;
 	private JScrollPane scroll;
 	private Connect connect;
 	private JButton cart, logout, payment;
 	private JLabel cartItemCount;
 	
-	private static CustomerTransactionView view = null;
+	private static CashierTransactionView view = null;
 	
-	private CustomerTransactionView() {}
+	private CashierTransactionView() {}
 	
-	public static CustomerTransactionView getInstance() {
-		if(view == null) view = new CustomerTransactionView();
+	public static CashierTransactionView getInstance() {
+		if(view == null) view = new CashierTransactionView();
 		return view;
 	}
 
@@ -53,8 +50,9 @@ public class CustomerTransactionView extends JFrame {
 		mainPanel = new JPanel(new BorderLayout());
 		tablePanel = new JPanel(new GridLayout(1,1));
 		headerPanel = new JPanel(new GridLayout(1,1));
+		footerPanel = new JPanel(new GridLayout(1,2));
 		
-		cart = new JButton("Cart (0)");
+		cart = new JButton("Cart");
 		logout = new JButton("Logout");
 		payment = new JButton("Pay");
 		
@@ -72,11 +70,15 @@ public class CustomerTransactionView extends JFrame {
 		table.getColumn("action").setCellRenderer(new ButtonRenderer());
 		table.getColumn("action").setCellEditor(new ButtonEditor(new JTextField()));
 		
+		footerPanel.add(cartItemCount);
+		footerPanel.add(payment);
+		
 		headerPanel.add(cart);
 		headerPanel.add(logout);
 		
 		mainPanel.add(headerPanel, BorderLayout.NORTH);
 		mainPanel.add(tablePanel, BorderLayout.CENTER);
+		mainPanel.add(footerPanel, BorderLayout.SOUTH);
 		add(mainPanel);
 		
 		setVisible(true);
@@ -94,6 +96,7 @@ public class CustomerTransactionView extends JFrame {
 			for(int i = 1; i <= rsmd.getColumnCount(); i++) {
 				dtm.addColumn(rsmd.getColumnName(i));
 			}
+			cartItemCount.setText(String.valueOf(rsmd.getColumnCount()) + " items in your cart");
 			dtm.addColumn("action");
 			while(rs.next()) {
 				dtm.addRow(new Object[] {
@@ -155,10 +158,7 @@ public class CustomerTransactionView extends JFrame {
 		public Object getCellEditorValue() {
 			// TODO Auto-generated method stub
 			if(clicked) {
-				CartItemController cartController = CartItemController.getInstance();
-				cartController.addToCart(Integer.parseInt(table.getValueAt(row, 0).toString()), 1);
-				cart.setText("Cart ("+ cartController.cartItemCount() +")");
-				JOptionPane.showMessageDialog(btn, table.getValueAt(row, 1) + " added to cart");
+				JOptionPane.showMessageDialog(btn, table.getValueAt(row, 0));
 			}
 			clicked = false;
 			return new String(label);
