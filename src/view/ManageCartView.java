@@ -27,7 +27,7 @@ public class ManageCartView extends JFrame {
 	private JTable table;
 	private JScrollPane scroll;
 	private Connect connect;
-	private JButton cart, logout, payment;
+	private JButton logout, payment;
 	private JLabel cartItemCount;
 	
 	private static ManageCartView view = null;
@@ -43,7 +43,7 @@ public class ManageCartView extends JFrame {
 		setSize(1000, 600);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("Add to Cart Form");
+		setTitle("Manage Cart Form");
 		
 		connect = Connect.getConnection();
 		
@@ -52,7 +52,6 @@ public class ManageCartView extends JFrame {
 		headerPanel = new JPanel(new GridLayout(1,1));
 		footerPanel = new JPanel(new GridLayout(1,2));
 		
-		cart = new JButton("Cart");
 		logout = new JButton("Logout");
 		payment = new JButton("Pay");
 		
@@ -73,7 +72,6 @@ public class ManageCartView extends JFrame {
 		footerPanel.add(cartItemCount);
 		footerPanel.add(payment);
 		
-		headerPanel.add(cart);
 		headerPanel.add(logout);
 		
 		mainPanel.add(headerPanel, BorderLayout.NORTH);
