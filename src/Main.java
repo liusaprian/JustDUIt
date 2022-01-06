@@ -2,10 +2,15 @@ import controller.CartItemController;
 
 public class Main {
 	
-	private CartItemController cartController = CartItemController.getInstance();
-
+//	private TransactionController transactionController = TransactionController.getInstance();
+	
+//	private ProductController productc;
+	
 	public Main() {
-		cartController.viewAddToCartForm();
+//		transactionController.returnAdminTransactionReportView();
+		
+//		productc = ProductController.getProductController();
+//		productc.getProductDataView();
 	}
 
 	public static void main(String[] args) {
