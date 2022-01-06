@@ -2,15 +2,16 @@ package controller;
 
 import java.util.Vector;
 
+import model.ProductModel;
 import model.Transaction;
-import view.CustomerTransactionView;
+import view.AddToCartView;
 import view.TransactionReportView;
 
 public class TransactionController {
 
 	private static TransactionController controller = null;
 	private Transaction transaction;
-	private CustomerTransactionView view = CustomerTransactionView.getInstance();
+	private AddToCartView customerView = AddToCartView.getInstance();
 	
 	private TransactionController() {
 		transaction = new Transaction();
@@ -26,7 +27,8 @@ public class TransactionController {
 	}
 	
 	public void returnTransactionCustomerView() {
-		view.showTransactionCustomer();
+		Vector<ProductModel> products = ProductModel.getProductModel().getAllProduct();
+		customerView.showAddToCartForm(products);
 	}
 	
 	public void returnAdminTransactionReportView() {

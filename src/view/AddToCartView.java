@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
@@ -24,25 +25,28 @@ import javax.swing.table.TableCellRenderer;
 
 import connection.Connect;
 import controller.CartItemController;
+import model.CartItem;
+import model.ProductModel;
 
-public class CustomerTransactionView extends JFrame {
+public class AddToCartView extends JFrame {
 	private JPanel mainPanel, headerPanel, tablePanel;
 	private JTable table;
 	private JScrollPane scroll;
 	private Connect connect;
 	private JButton cart, logout, payment;
 	private JLabel cartItemCount;
+	private JTextField quantity;
 	
-	private static CustomerTransactionView view = null;
+	private static AddToCartView view = null;
 	
-	private CustomerTransactionView() {}
+	private AddToCartView() {}
 	
-	public static CustomerTransactionView getInstance() {
-		if(view == null) view = new CustomerTransactionView();
+	public static AddToCartView getInstance() {
+		if(view == null) view = new AddToCartView();
 		return view;
 	}
 
-	public void showTransactionCustomer() {
+	public void showAddToCartForm(Vector<ProductModel> products) {
 		setSize(1000, 600);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -55,22 +59,32 @@ public class CustomerTransactionView extends JFrame {
 		headerPanel = new JPanel(new GridLayout(1,1));
 		
 		cart = new JButton("Cart (0)");
+		cart.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CartItemController cartController = CartItemController.getInstance();
+				cartController.viewManageCartForm();
+			}
+		});
 		logout = new JButton("Logout");
 		payment = new JButton("Pay");
+		
+		quantity = new JTextField();
 		
 		cartItemCount = new JLabel();
 		cartItemCount.setHorizontalAlignment(JLabel.CENTER);
 		
 		table = new JTable();
-		prepareTableModel();
+		prepareTableModel(products);
 		
 		scroll = new JScrollPane(table, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		tablePanel.add(scroll);
-		table.getColumn("action").setCellRenderer(new ButtonRenderer());
-		table.getColumn("action").setCellEditor(new ButtonEditor(new JTextField()));
+		table.getColumn("Action").setCellRenderer(new ButtonRenderer());
+		table.getColumn("Action").setCellEditor(new ButtonEditor(new JTextField()));
 		
 		headerPanel.add(cart);
 		headerPanel.add(logout);
@@ -82,31 +96,17 @@ public class CustomerTransactionView extends JFrame {
 		setVisible(true);
 	}
 	
-	public void prepareTableModel() {
-		DefaultTableModel dtm = new DefaultTableModel();
-		ResultSet rs;
-		ResultSetMetaData rsmd;
-		
-		try {
-			rs = connect.executeQuery("SELECT * FROM product");
-			rsmd = rs.getMetaData();
-			
-			for(int i = 1; i <= rsmd.getColumnCount(); i++) {
-				dtm.addColumn(rsmd.getColumnName(i));
-			}
-			dtm.addColumn("action");
-			while(rs.next()) {
-				dtm.addRow(new Object[] {
-						rs.getInt("id"),
-						rs.getString("name"),
-						rs.getString("description"),
-						rs.getInt("price"),
-						rs.getInt("stock"),
-				});
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public void prepareTableModel(Vector<ProductModel> products) {
+		String[] columns = {"#", "Name", "Description", "Price", "Stock", "Action"};
+		DefaultTableModel dtm = new DefaultTableModel(null, columns);
+		for (ProductModel p : products)
+			dtm.addRow(new Object[] {
+					p.getProductId(),
+					p.getProductName(),
+					p.getProductDescription(),
+					p.getProductPrice(),
+					p.getProdcutStock()
+			});
 		
 		table.setModel(dtm);
 	}
@@ -155,10 +155,19 @@ public class CustomerTransactionView extends JFrame {
 		public Object getCellEditorValue() {
 			// TODO Auto-generated method stub
 			if(clicked) {
-				CartItemController cartController = CartItemController.getInstance();
-				cartController.addToCart(Integer.parseInt(table.getValueAt(row, 0).toString()), 1);
-				cart.setText("Cart ("+ cartController.cartItemCount() +")");
-				JOptionPane.showMessageDialog(btn, table.getValueAt(row, 1) + " added to cart");
+				Object[] quantityInput = {"Quantity: ", quantity};
+				int option = JOptionPane.showConfirmDialog(btn, quantityInput, "Buy " + table.getValueAt(row, 1), JOptionPane.OK_CANCEL_OPTION);
+				if(option == JOptionPane.OK_OPTION) {
+					int qtyInputted = Integer.parseInt(quantity.getText());
+					CartItemController cartController = CartItemController.getInstance();
+					CartItem itemAdded = cartController.addToCart(Integer.parseInt(table.getValueAt(row, 0).toString()), qtyInputted);
+					if(itemAdded == null) 
+						JOptionPane.showMessageDialog(btn, "Product stock is not enough");
+					else {
+						cart.setText("Cart ("+ cartController.cartItemCount() +")");
+						JOptionPane.showMessageDialog(btn, qtyInputted + " " + table.getValueAt(row, 1) + " added to cart");
+					}
+				}
 			}
 			clicked = false;
 			return new String(label);

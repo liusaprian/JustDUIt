@@ -22,7 +22,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import connection.Connect;
 
-public class CashierTransactionView extends JFrame {
+public class ManageCartView extends JFrame {
 	private JPanel mainPanel, headerPanel, tablePanel, footerPanel;
 	private JTable table;
 	private JScrollPane scroll;
@@ -30,16 +30,16 @@ public class CashierTransactionView extends JFrame {
 	private JButton cart, logout, payment;
 	private JLabel cartItemCount;
 	
-	private static CashierTransactionView view = null;
+	private static ManageCartView view = null;
 	
-	private CashierTransactionView() {}
+	private ManageCartView() {}
 	
-	public static CashierTransactionView getInstance() {
-		if(view == null) view = new CashierTransactionView();
+	public static ManageCartView getInstance() {
+		if(view == null) view = new ManageCartView();
 		return view;
 	}
 
-	public void showTransactionCustomer() {
+	public void showManageCartForm() {
 		setSize(1000, 600);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);

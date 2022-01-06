@@ -26,6 +26,16 @@ public class ProductModel {
 	private ProductModel() {
 		connect = Connect.getConnection();
 	}
+
+	public ProductModel(Integer productId, String productName, String productDescription, Integer productPrice,
+			Integer prodcutStock) {
+		super();
+		this.productId = productId;
+		this.productName = productName;
+		this.productDescription = productDescription;
+		this.productPrice = productPrice;
+		this.prodcutStock = prodcutStock;
+	}
 	
 	public Vector<ProductModel> getAllProduct(){
 		Vector<ProductModel> productList = new Vector<>();
@@ -55,15 +65,18 @@ public class ProductModel {
 		
 		return productList;
 	}
-
-	public ProductModel(Integer productId, String productName, String productDescription, Integer productPrice,
-			Integer prodcutStock) {
-		super();
-		this.productId = productId;
-		this.productName = productName;
-		this.productDescription = productDescription;
-		this.productPrice = productPrice;
-		this.prodcutStock = prodcutStock;
+	
+	public ProductModel getProduct(int productId) {
+		ResultSet rs;
+		rs = connect.executeQuery("SELECT * FROM product WHERE id = " + productId);
+		try {
+			rs.next();
+			return new ProductModel(productId, rs.getString("name"), rs.getString("description"), rs.getInt("price"), rs.getInt("stock"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public Integer getProductId() {
