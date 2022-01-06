@@ -1,11 +1,17 @@
+import controller.ProductController;
 import controller.TransactionController;
 
 public class Main {
 	
-	private TransactionController transactionController = TransactionController.getInstance();
-
+//	private TransactionController transactionController = TransactionController.getInstance();
+	
+//	private ProductController productc;
+	
 	public Main() {
-		transactionController.returnAdminTransactionReportView();
+//		transactionController.returnAdminTransactionReportView();
+		
+//		productc = ProductController.getProductController();
+//		productc.getProductDataView();
 	}
 
 	public static void main(String[] args) {
