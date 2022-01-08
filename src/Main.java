@@ -10,8 +10,7 @@ public class Main {
 	public Main() {
 //		transactionController.returnAdminTransactionReportView();
 		
-		if(username == "customer") cartItemController.viewAddToCartForm();
-		else if(username == "cashier") cartItemController.viewManageCartForm();
+		if(username == "customer" || username == "cashier") cartItemController.viewAddToCartForm();
 //		productc = ProductController.getProductController();
 //		productc.getProductDataView();
 	}

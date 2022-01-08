@@ -12,10 +12,21 @@ public class TransactionItem {
 	private int transactionId, productId, quantity;
 	private Connect conn = Connect.getConnection();
 	
+	private static TransactionItem transactionItemModel;
+	
+	public static TransactionItem getInstance() {
+		if(transactionItemModel == null) transactionItemModel = new TransactionItem();
+		return transactionItemModel;
+	}
+	
 	public TransactionItem(int transactionId, int productId, int quantity) {
 		this.transactionId = transactionId;
 		this.productId = productId;
 		this.quantity = quantity;
+	}
+	
+	private TransactionItem() {
+		conn = Connect.getConnection();
 	}
 	
 	public int getTransactionId() {
@@ -31,7 +42,7 @@ public class TransactionItem {
 	}
 	
 	public TransactionItem addTransactionItem(int transactionId, int productId, int quantity) throws SQLException {
-		String query = "INSERT INTO transaction_detail(transaction_id, product_id, quantity) VALUES(?, ?, ?)";
+		String query = "INSERT INTO transaction_item(transaction_id, product_id, quantity) VALUES(?, ?, ?)";
 		PreparedStatement ps = conn.prepareStatement(query);
 		ps.setInt(1, transactionId);
 		ps.setInt(2, productId);
@@ -42,7 +53,7 @@ public class TransactionItem {
 	
 	public Vector<TransactionItem> getTransactionItems(int transactionId) {
 		ResultSet rs;
-		rs = conn.executeQuery("SELECT * FROM transaction_detail WHERE transaction_id = " + transactionId);
+		rs = conn.executeQuery("SELECT * FROM transaction_item WHERE transaction_id = " + transactionId);
 		Vector<TransactionItem> items = new Vector<TransactionItem>();
 		try {
 			while(rs.next())

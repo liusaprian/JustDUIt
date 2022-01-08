@@ -32,8 +32,7 @@ public class AddToCartView extends JFrame {
 	private JPanel mainPanel, headerPanel, tablePanel;
 	private JTable table;
 	private JScrollPane scroll;
-	private Connect connect;
-	private JButton cart, logout, payment;
+	private JButton cart, logout;
 	private JLabel cartItemCount;
 	private JTextField quantity;
 	
@@ -52,8 +51,6 @@ public class AddToCartView extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Add to Cart Form");
 		
-		connect = Connect.getConnection();
-		
 		mainPanel = new JPanel(new BorderLayout());
 		tablePanel = new JPanel(new GridLayout(1,1));
 		headerPanel = new JPanel(new GridLayout(1,1));
@@ -64,11 +61,10 @@ public class AddToCartView extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				CartItemController cartController = CartItemController.getInstance();
-				cartController.viewManageCartForm();
+				cartController.viewManageCartForm(AddToCartView.this);
 			}
 		});
 		logout = new JButton("Logout");
-		payment = new JButton("Pay");
 		
 		quantity = new JTextField();
 		
@@ -97,7 +93,7 @@ public class AddToCartView extends JFrame {
 	}
 	
 	public void prepareTableModel(Vector<ProductModel> products) {
-		String[] columns = {"#", "Name", "Description", "Price", "Stock", "Action"};
+		String[] columns = {"Id", "Name", "Description", "Price", "Stock", "Action"};
 		DefaultTableModel dtm = new DefaultTableModel(null, columns);
 		for (ProductModel p : products)
 			dtm.addRow(new Object[] {
@@ -167,6 +163,7 @@ public class AddToCartView extends JFrame {
 						cart.setText("Cart ("+ cartController.cartItemCount() +")");
 						JOptionPane.showMessageDialog(btn, qtyInputted + " " + table.getValueAt(row, 1) + " added to cart");
 					}
+					quantity.setText("");
 				}
 			}
 			clicked = false;

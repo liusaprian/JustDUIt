@@ -12,7 +12,13 @@ public class Transaction {
 	private int id, employeeId;
 	private Date purchaseDate;
 	private String paymentType;
-	private Connect conn = Connect.getConnection();
+	private static Transaction transactionModel;
+	private Connect conn;
+	
+	public static Transaction getTransaction() {
+		if(transactionModel == null) transactionModel = new Transaction();
+		return transactionModel;
+	}
 	
 	public Transaction(int id, int employeeId, Date purchaseDate, String paymentType) {
 		super();
@@ -22,8 +28,8 @@ public class Transaction {
 		this.paymentType = paymentType;
 	}
 	
-	public Transaction() {
-		
+	private Transaction() {
+		conn = Connect.getConnection();
 	}
 	
 	public int getId() {
@@ -42,14 +48,15 @@ public class Transaction {
 		return paymentType;
 	}
 	
-	public Transaction addTransaction() throws SQLException {
+	public Transaction addTransaction(Date purchaseDate, int employeeId, String paymentType) throws SQLException {
 		String query = "INSERT INTO transaction(purchase_date, employee_id, payment_type) VALUES(?, ?, ?)";
 		PreparedStatement ps = conn.prepareStatement(query);
 		ps.setDate(1, purchaseDate);
 		ps.setInt(2, employeeId);
 		ps.setString(3, paymentType);
 		ps.execute();
-		return this;
+		Vector<Transaction> trs = getAllTransactions();
+		return trs.get(trs.size()-1);
 	}
 	
 	public Vector<Transaction> getAllTransactions() {
