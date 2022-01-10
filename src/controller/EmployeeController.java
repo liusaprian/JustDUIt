@@ -25,6 +25,7 @@ public class EmployeeController {
 	
 	public void getEmployeeView() {
 		Vector<EmployeeModel> employeeList= employeem.getAllEmployee();
-		new EmployeeView(employeeList);
+//		new EmployeeView(employeeList);
+		new EmployeeView();
 	}
 }

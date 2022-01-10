@@ -26,11 +26,43 @@ public class ProductModel {
 	private ProductModel() {
 		connect = Connect.getConnection();
 	}
+	
+	public void deleteProduct(ProductModel product) {
+		connect.executeUpdate("DELETE FROM product WHERE id = " + product.getProductId());
+	}
+	
+	public void updateProduct(ProductModel product) {
+		connect.executeUpdate("UPDATE product SET "
+				+ "name =  '" + product.getProductName() + "',"
+				+ "description = '" + product.getProductDescription() + "',"
+				+ "price = " + product.getProductPrice() + ","
+				+ "stock = " + product.getProdcutStock()
+				+ " WHERE id = " + product.getProductId());
+	}
+	
+	public void insertProduct(ProductModel product) {
+		connect.executeUpdate("INSERT INTO product VALUES("
+				+ "NULL,"
+				+ "'" + product.getProductName()+"',"
+				+ "'" + product.getProductDescription()+"',"
+				+ product.getProductPrice()+","
+				+ product.getProdcutStock()
+				+ ")");
+	}
 
 	public ProductModel(Integer productId, String productName, String productDescription, Integer productPrice,
 			Integer prodcutStock) {
 		super();
 		this.productId = productId;
+		this.productName = productName;
+		this.productDescription = productDescription;
+		this.productPrice = productPrice;
+		this.prodcutStock = prodcutStock;
+	}
+	
+	public ProductModel(String productName, String productDescription, Integer productPrice,
+			Integer prodcutStock) {
+		super();
 		this.productName = productName;
 		this.productDescription = productDescription;
 		this.productPrice = productPrice;
@@ -73,7 +105,6 @@ public class ProductModel {
 			rs.next();
 			return new ProductModel(productId, rs.getString("name"), rs.getString("description"), rs.getInt("price"), rs.getInt("stock"));
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
