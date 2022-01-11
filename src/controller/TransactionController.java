@@ -9,6 +9,7 @@ import model.CartItem;
 import model.ProductModel;
 import model.Transaction;
 import model.TransactionItem;
+import view.TransactionDetailView;
 import view.TransactionReportView;
 
 public class TransactionController {
@@ -45,16 +46,20 @@ public class TransactionController {
 		return null;
 	}
 	
-	public Vector<Transaction> getAllTransaction() {
-		return transaction.getAllTransactions();
+	public Vector<Transaction> getAllTransaction(String month, String year) {
+		return transaction.getAllTransactions(month, year);
 	}
 	
 	public Vector<TransactionItem> getAllTransactionItens(int id) {
 		return transactionItem.getTransactionItems(id);
 	}
 	
-	public void returnAdminTransactionReportView() {
-		new TransactionReportView();
+	public void viewTransactionReport(String month, String year) {
+		new TransactionReportView(month, year);
+	}
+	
+	public void viewTransactionDetail(int id) {
+		new TransactionDetailView(id);
 	}
 	
 //	public void viewTodayTransactionReport() {

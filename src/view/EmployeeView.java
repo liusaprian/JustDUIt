@@ -32,7 +32,7 @@ public class EmployeeView extends JFrame{
 	private JLabel nameLabel, salaryLabel, passwordLabel;
 	
 	public EmployeeView(Vector<EmployeeModel> EmployeeList) {
-		Employeec = EmployeeController.getEmployeeController();
+		Employeec = EmployeeController.getInstance();
 		setSize(1000,600);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);

@@ -13,10 +13,11 @@ public class AuthController {
 	
 	private Connect conn = Connect.getConnection();
 	
-	private EmployeeController employeeController = EmployeeController.getEmployeeController();
+	private EmployeeController employeeController = EmployeeController.getInstance();
 	private RoleController roleController = RoleController.getInstance();
-	private ProductController productController = ProductController.getProductController();
+	private ProductController productController = ProductController.getInstance();
 	private CartItemController cartItemController = CartItemController.getInstance();
+	private AdminController adminController = AdminController.getInstance();
 	private static AuthController controller = null;
 	private AuthController() {}
 	
@@ -54,7 +55,7 @@ public class AuthController {
 			employeeController.getEmployeeView();
 			break;
 		case "manager":
-			//
+			adminController.getAdminMenu();
 			break;
 		default:
 			break;
