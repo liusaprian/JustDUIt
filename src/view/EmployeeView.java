@@ -25,10 +25,11 @@ public class EmployeeView extends JFrame{
 	
 	private JPanel mainPanel, tablePanel, headerPanel, formPanel, buttonPanel, inputPanel;
 	private JTextField EmployeeIdText, EmployeeRole_IdText, EmployeeUsernameText, EmployeeNameText, EmployeeSalaryText, EmployeeStatusText, EmployeePasswordText;
-	private JButton logout, insertButton, updateButton;
+	private JButton logout, insertButton, updateButton, deleteButton;
 	private JTable table;
 	private JScrollPane scroll;
 	private EmployeeController Employeec;
+	private JLabel nameLabel, salaryLabel, passwordLabel;
 	
 	public EmployeeView(Vector<EmployeeModel> EmployeeList) {
 		Employeec = EmployeeController.getEmployeeController();
@@ -46,17 +47,17 @@ public class EmployeeView extends JFrame{
 		
 		EmployeeIdText = new JTextField();
 		EmployeeRole_IdText = new JTextField();
+		EmployeeRole_IdText.setColumns(2);
 		EmployeeNameText = new JTextField();
-		EmployeeNameText.setColumns(20);
+		EmployeeNameText.setColumns(10);
 		EmployeeUsernameText = new JTextField();
-		EmployeeUsernameText.setColumns(20);
+		EmployeeUsernameText.setColumns(10);
 		EmployeeSalaryText = new JTextField();
+		EmployeeSalaryText.setColumns(10);
 		EmployeeStatusText = new JTextField();
-		EmployeeStatusText.setColumns(20);
-		EmployeeStatusText = new JTextField();
-		EmployeeStatusText.setColumns(20);
+		EmployeeStatusText.setColumns(10);
 		EmployeePasswordText = new JTextField();
-		EmployeePasswordText.setColumns(20);
+		EmployeePasswordText.setColumns(10);
 		
 		logout = new JButton("Logout");
 		logout.addActionListener(new ActionListener() {
@@ -77,9 +78,7 @@ public class EmployeeView extends JFrame{
 				
 				
 				Employeec.addEmployee(username, name, Integer.parseInt(role_Id), Integer.parseInt(salary));
-				Vector<EmployeeModel> updatedEmployees = new Vector<EmployeeModel>();  
-				updatedEmployees = Employeec.getAllEmployee();
-				prepareTableModel(updatedEmployees);
+				refresh();
 			}
 		});
 		updateButton = new JButton("Update");
@@ -96,9 +95,18 @@ public class EmployeeView extends JFrame{
 				String password = EmployeePasswordText.getText().toString();
 				
 				Employeec.updateEmployee(Integer.parseInt(id), Integer.parseInt(roleId), name, username, status, Integer.parseInt("salary"), password);
-				Vector<EmployeeModel> updatedEmployees = new Vector<EmployeeModel>();  
-				updatedEmployees = Employeec.getAllEmployee();
-				prepareTableModel(updatedEmployees);
+				refresh();
+			}
+		});
+		
+		deleteButton = new JButton("Fire");
+		deleteButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String id = EmployeeIdText.getText().toString();
+				Employeec.fireEmployee(Integer.parseInt(id));
+				refresh();
 			}
 		});
 		
@@ -113,6 +121,7 @@ public class EmployeeView extends JFrame{
 		
 		buttonPanel.add(insertButton);
 		buttonPanel.add(updateButton);
+		buttonPanel.add(deleteButton);
 		
 		formPanel.add(inputPanel);
 		formPanel.add(buttonPanel);
@@ -152,7 +161,7 @@ public class EmployeeView extends JFrame{
 	}
 
 	public void prepareTableModel(Vector<EmployeeModel> Employees) {
-		String[] col = {"Id","Role_Id", "Name", "Username", "Salary", "Status", "Password"};
+		String[] col = {"Id","Role Id", "Name", "Username", "Salary", "Status", "Password"};
 		DefaultTableModel dtm = new DefaultTableModel(null, col);
 		for (EmployeeModel p : Employees)
 			dtm.addRow(new Object[] {
@@ -166,5 +175,11 @@ public class EmployeeView extends JFrame{
 			});
 		
 		table.setModel(dtm);
+	}
+	
+	public void refresh() {
+		Vector<EmployeeModel> updatedEmployees = new Vector<EmployeeModel>();  
+		updatedEmployees = Employeec.getAllEmployee();
+		prepareTableModel(updatedEmployees);
 	}
 }

@@ -11,6 +11,7 @@ import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -29,6 +30,7 @@ public class ProductDataView extends JFrame{
 	private JTable table;
 	private JScrollPane scroll;
 	private ProductController productc;
+	private JLabel nameLabel, descLabel, priceLabel, stockLabel; 
 	
 	public ProductDataView(Vector<ProductModel> productList) {
 		productc = ProductController.getProductController();
@@ -42,7 +44,7 @@ public class ProductDataView extends JFrame{
 		headerPanel = new JPanel(new GridLayout(1,1));
 		formPanel = new JPanel(new GridLayout(2,1));
 		buttonPanel = new JPanel();
-		inputPanel = new JPanel(); 
+		inputPanel = new JPanel(new GridLayout(2,1)); 
 		
 		productIdText = new JTextField();
 		productNameText = new JTextField();
@@ -53,6 +55,11 @@ public class ProductDataView extends JFrame{
 		productPriceText.setColumns(10);
 		productStockText = new JTextField();
 		productStockText.setColumns(5);
+		
+		nameLabel = new JLabel("Name");
+		descLabel = new JLabel("Description");
+		priceLabel = new JLabel("Price");
+		stockLabel = new JLabel("Stock");
 		
 		logout = new JButton("Logout");
 		logout.addActionListener(new ActionListener() {
@@ -70,11 +77,12 @@ public class ProductDataView extends JFrame{
 				String desc = productDescText.getText().toString();
 				String price = productPriceText.getText().toString();
 				String stock = productStockText.getText().toString();
-				
-				productc.addProduct(name, desc, Integer.parseInt(price), Integer.parseInt(stock));
-				Vector<ProductModel> updatedProducts = new Vector<ProductModel>();  
-				updatedProducts = productc.getAllProduct();
-				prepareTableModel(updatedProducts);
+				if(validate(name, desc, price, stock)) {
+					productc.addProduct(name, desc, Integer.parseInt(price), Integer.parseInt(stock));
+					Vector<ProductModel> updatedProducts = new Vector<ProductModel>();  
+					updatedProducts = productc.getAllProduct();
+					prepareTableModel(updatedProducts);
+				}
 			}
 		});
 		updateButton = new JButton("Update");
@@ -88,10 +96,12 @@ public class ProductDataView extends JFrame{
 				String price = productPriceText.getText().toString();
 				String stock = productStockText.getText().toString();
 				
-				productc.updateProduct(Integer.parseInt(id), name, desc, Integer.parseInt(price), Integer.parseInt(stock));
-				Vector<ProductModel> updatedProducts = new Vector<ProductModel>();  
-				updatedProducts = productc.getAllProduct();
-				prepareTableModel(updatedProducts);
+				if(validate(name, desc, price, stock)) {
+					productc.updateProduct(Integer.parseInt(id), name, desc, Integer.parseInt(price), Integer.parseInt(stock));
+					Vector<ProductModel> updatedProducts = new Vector<ProductModel>();  
+					updatedProducts = productc.getAllProduct();
+					prepareTableModel(updatedProducts);
+				}
 			}
 		});
 		deleteButton = new JButton("Delete");
@@ -109,6 +119,10 @@ public class ProductDataView extends JFrame{
 			}
 		});
 		
+		inputPanel.add(nameLabel);
+		inputPanel.add(descLabel);
+		inputPanel.add(priceLabel);
+		inputPanel.add(stockLabel);
 		inputPanel.add(productNameText);
 		inputPanel.add(productDescText);
 		inputPanel.add(productPriceText);
@@ -166,5 +180,29 @@ public class ProductDataView extends JFrame{
 			});
 		
 		table.setModel(dtm);
+	}
+	
+	public boolean validate(String name, String desc, String price, String stock) {
+		if(name.equals("") || desc.equals("")) {
+			JOptionPane.showMessageDialog(null, "Fields must not be empty");
+			return false;
+		}
+		int priceNum, stockNum;
+		try {
+			priceNum = Integer.parseInt(price);
+			stockNum = Integer.parseInt(stock);
+		} catch(NumberFormatException e) {
+			productPriceText.setText("");
+			productStockText.setText("");
+			JOptionPane.showMessageDialog(null, "Price & Stock must be numeric");
+			return false;
+		}
+		if(priceNum <= 0 || stockNum <= 0) {
+			productPriceText.setText("");
+			productStockText.setText("");
+			JOptionPane.showMessageDialog(null, "Price & Stock must be above zero");
+			return false;
+		}
+		return true;
 	}
 }

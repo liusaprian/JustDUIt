@@ -4,7 +4,9 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import helper.Session;
 import model.CartItem;
+import model.ProductModel;
 import model.Transaction;
 import model.TransactionItem;
 import view.TransactionReportView;
@@ -14,6 +16,7 @@ public class TransactionController {
 	private static TransactionController controller = null;
 	private Transaction transaction;
 	private TransactionItem transactionItem;
+	private ProductModel product = ProductModel.getProductModel();
 	
 	private TransactionController() {
 		transaction = Transaction.getTransaction();
@@ -26,12 +29,15 @@ public class TransactionController {
 	}
 	
 	public Transaction insertTransaction(String paymentType, Vector<CartItem> carts) {
-		int employeeId = 1; //User.getCurrentUser().getId();
+		int employeeId = Session.getSession().getCurrentUser().getEmployeeId();
 		try {
-			//UPDATE PRODUCT STOCK
 			Transaction tr = transaction.addTransaction(new Date(System.currentTimeMillis()), employeeId, paymentType);
-			for(CartItem cartItem: carts)
+			for(CartItem cartItem: carts) {
 				transactionItem.addTransactionItem(tr.getId(), cartItem.getProductId(), cartItem.getQuantity());
+				ProductModel p = product.getProduct(cartItem.getProductId());
+				p.setProdcutStock(p.getProdcutStock() - cartItem.getQuantity());
+				product.updateProduct(p);
+			}
 			return tr;
 		} catch (SQLException e) {
 			e.printStackTrace();

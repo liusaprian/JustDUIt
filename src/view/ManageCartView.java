@@ -41,7 +41,7 @@ public class ManageCartView extends JFrame {
 	private JPanel mainPanel, headerPanel, tablePanel, footerPanel;
 	private JTable table;
 	private JScrollPane scroll;
-	private JButton logout, checkout;
+	private JButton logout, checkout, back;
 	private JLabel cartTotalPrice;
 	private JTextField quantity, money;
 	private CartItemController cartController;
@@ -68,6 +68,16 @@ public class ManageCartView extends JFrame {
 		tablePanel = new JPanel(new GridLayout(1,1));
 		headerPanel = new JPanel(new GridLayout(1,1));
 		footerPanel = new JPanel(new GridLayout(1,2));
+		
+		back = new JButton("Back");
+		back.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ManageCartView.this.dispose();
+				cartController.viewAddToCartForm();
+			}
+		});
 		
 		logout = new JButton("Logout");
 		logout.addActionListener(new ActionListener() {
