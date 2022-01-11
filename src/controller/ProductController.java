@@ -7,14 +7,14 @@ import view.ProductDataView;
 
 public class ProductController {
 
-	private static ProductController productc;
+	private static ProductController controller;
 	private ProductModel productm;
 	
-	public static ProductController getProductController() {
-		if(productc == null) {
-			productc = new ProductController();
+	public static ProductController getInstance() {
+		if(controller == null) {
+			controller = new ProductController();
 		}
-		return productc;
+		return controller;
 	}
 	
 	private ProductController() {

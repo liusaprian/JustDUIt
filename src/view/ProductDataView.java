@@ -31,7 +31,7 @@ public class ProductDataView extends JFrame{
 	private ProductController productc;
 	
 	public ProductDataView(Vector<ProductModel> productList) {
-		productc = ProductController.getProductController();
+		productc = ProductController.getInstance();
 		setSize(1000,600);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);

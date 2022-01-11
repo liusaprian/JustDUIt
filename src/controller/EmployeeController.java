@@ -7,14 +7,12 @@ import view.EmployeeView;
 
 public class EmployeeController {
 
-	private static EmployeeController Employeec;
+	private static EmployeeController controller;
 	private EmployeeModel Employeem;
 	
-	public static EmployeeController getEmployeeController() {
-		if(Employeec == null) {
-			Employeec = new EmployeeController();
-		}
-		return Employeec;
+	public static EmployeeController getInstance() {
+		if(controller == null) controller = new EmployeeController();
+		return controller;
 	}
 	
 	private EmployeeController() {

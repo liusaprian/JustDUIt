@@ -31,7 +31,7 @@ public class EmployeeView extends JFrame{
 	private EmployeeController Employeec;
 	
 	public EmployeeView(Vector<EmployeeModel> EmployeeList) {
-		Employeec = EmployeeController.getEmployeeController();
+		Employeec = EmployeeController.getInstance();
 		setSize(1000,600);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);

@@ -55,13 +55,19 @@ public class Transaction {
 		ps.setInt(2, employeeId);
 		ps.setString(3, paymentType);
 		ps.execute();
-		Vector<Transaction> trs = getAllTransactions();
+		Vector<Transaction> trs = getAllTransactions(null, null);
 		return trs.get(trs.size()-1);
 	}
 	
-	public Vector<Transaction> getAllTransactions() {
+	public Vector<Transaction> getAllTransactions(String month, String year) {
 		ResultSet rs;
-		rs = conn.executeQuery("SELECT * FROM transaction");
+		
+		if(month == null && year == null) {
+			rs = conn.executeQuery("SELECT * FROM transaction");
+		} else {
+			rs = conn.executeQuery("SELECT * FROM transaction WHERE MONTH(purchase_date) = " + month + " AND YEAR(purchase_date) = " + year);
+		}
+		
 		Vector<Transaction> transactions = new Vector<>();
 		try {
 			while(rs.next()) 
