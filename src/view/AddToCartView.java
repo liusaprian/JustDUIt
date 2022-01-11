@@ -168,14 +168,17 @@ public class AddToCartView extends JFrame {
 				int option = JOptionPane.showConfirmDialog(btn, quantityInput, "Buy " + table.getValueAt(row, 1), JOptionPane.OK_CANCEL_OPTION);
 				if(option == JOptionPane.OK_OPTION) {
 					int qtyInputted = Integer.parseInt(quantity.getText());
-					CartItem itemAdded = cartController.addToCart(Integer.parseInt(table.getValueAt(row, 0).toString()), qtyInputted);
-					if(itemAdded == null) 
-						JOptionPane.showMessageDialog(btn, "Product stock is not enough");
+					if(qtyInputted <= 0) JOptionPane.showMessageDialog(null, "Quantity must be above zero");
 					else {
-						cart.setText("Cart ("+ cartController.cartItemCount() +")");
-						JOptionPane.showMessageDialog(btn, qtyInputted + " " + table.getValueAt(row, 1) + " added to cart");
+						CartItem itemAdded = cartController.addToCart(Integer.parseInt(table.getValueAt(row, 0).toString()), qtyInputted);
+						if(itemAdded == null) 
+							JOptionPane.showMessageDialog(btn, "Product stock is not enough");
+						else {
+							cart.setText("Cart ("+ cartController.cartItemCount() +")");
+							JOptionPane.showMessageDialog(btn, qtyInputted + " " + table.getValueAt(row, 1) + " added to cart");
+						}
+						quantity.setText("");
 					}
-					quantity.setText("");
 				}
 			}
 			clicked = false;
