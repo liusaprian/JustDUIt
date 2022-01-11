@@ -11,12 +11,13 @@ public class EmployeeModel {
 	
 	private Connect connect;
 	public static EmployeeModel employeem;
-	public int EmployeeId;
-	public String EmployeeRole;
+	public Integer EmployeeId;
+	public Integer EmployeeRole_Id;
 	public String EmployeeName;
 	public String EmployeeUsername;
 	public String EmployeeStatus;
-	public int EmployeeSalary;
+	public Integer EmployeeSalary;
+	public String EmployeePassword;
 	
 	public static EmployeeModel getEmployeeModel() {
 		if(employeem == null) {
@@ -41,20 +42,22 @@ public class EmployeeModel {
 		try {
 			while(rs.next()) {
 				Integer id;
-				String role_id;
+				Integer role_id;
 				String name;
 				String username;
 				String status;
 				Integer salary;
+				String password;
 				
 				id = rs.getInt("Id");
-				role_id = rs.getString("Role_id");
+				role_id = rs.getInt("Role_id");
 				name = rs.getString("Name");
 				username = rs.getString("Username");
 				status = rs.getString("Status");
 				salary = rs.getInt("Salary");
+				password = rs.getString("Password");
 				
-				employeeList.add(new EmployeeModel(id, role_id, name, username, status, salary));
+				employeeList.add(new EmployeeModel(id, role_id, name, username, status, salary, password));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -64,15 +67,35 @@ public class EmployeeModel {
 	}
 	
 	
-	public EmployeeModel(int employeeId, String employeeRole, String employeeName, String employeeUsername,
-			String employeeStatus, int employeeSalary) {
+	public EmployeeModel(Integer employeeId, Integer employeeRole_Id, String employeeName, String employeeUsername,
+			String employeeStatus, int employeeSalary, String employeePassword) {
 		super();
-		EmployeeId = employeeId;
-		EmployeeRole = employeeRole;
-		EmployeeName = employeeName;
-		EmployeeUsername = employeeUsername;
-		EmployeeStatus = employeeStatus;
-		EmployeeSalary = employeeSalary;
+		this.EmployeeId = employeeId;
+		this.EmployeeRole_Id = employeeRole_Id;
+		this.EmployeeName = employeeName;
+		this.EmployeeUsername = employeeUsername;
+		this.EmployeeStatus = employeeStatus;
+		this.EmployeeSalary = employeeSalary;
+		this.EmployeePassword = employeePassword;
+	}
+	
+
+	public EmployeeModel(Integer id, Integer Role_Id, String username, String salary, String password) {
+		super();
+		this.EmployeeId = getEmployeeId();
+		this.EmployeeRole_Id = getEmployeeRole_Id();
+		this.EmployeeName = getEmployeeName();
+		this.EmployeeUsername = getEmployeeUsername();
+		this.EmployeeSalary = getEmployeeSalary();
+	}
+
+	public EmployeeModel(String name, String username, Integer salary, Integer role_Id) {
+		super();
+		this.EmployeeName = getEmployeeName();
+		this.EmployeeUsername = getEmployeeUsername();
+		this.EmployeeStatus = getEmployeeStatus();
+		this.EmployeeSalary = getEmployeeSalary();
+		this.EmployeePassword = getEmployeePassword();
 	}
 
 	public int getEmployeeId() {
@@ -83,12 +106,12 @@ public class EmployeeModel {
 		EmployeeId = employeeId;
 	}
 
-	public String getEmployeeRole() {
-		return EmployeeRole;
+	public int getEmployeeRole_Id() {
+		return EmployeeRole_Id;
 	}
 
-	public void setEmployeeRole(String employeeRole) {
-		EmployeeRole = employeeRole;
+	public void setEmployeeRole_Id(int employeeRole) {
+		EmployeeRole_Id = employeeRole;
 	}
 
 	public String getEmployeeName() {
@@ -123,7 +146,39 @@ public class EmployeeModel {
 		EmployeeSalary = employeeSalary;
 	}
 	
+	public String getEmployeePassword() {
+		return EmployeePassword;
+	}
+
+	public void setEmployeePassword(String employeePassword) {
+		EmployeePassword = employeePassword;
+	}
+
+	public void insertEmployee(EmployeeModel employee) {
+		connect.executeUpdate("INSERT INTO employee VALUES("
+				+ "NULL,"
+				+ employee.getEmployeeName()+","
+				+ employee.getEmployeeUsername()+","
+				+ employee.getEmployeeSalary()+","
+				+ "'" + employee.getEmployeeRole_Id()+"',"
+				+ ")");
+		
+	}
+
+	public void updateEmployee(EmployeeModel employee) {
+		connect.executeUpdate("INSERT INTO employee VALUES("
+				+ "NULL,"
+				+ employee.getEmployeeId()+","
+				+ employee.getEmployeeName()+","
+				+ employee.getEmployeeSalary()+","
+				+ "'" + employee.getEmployeePassword()+"',"
+				+ ")");
+		
+		
+	}
 	
+	
+
 	
 
 
