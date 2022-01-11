@@ -25,6 +25,7 @@ import javax.swing.table.TableCellRenderer;
 
 import connection.Connect;
 import controller.CartItemController;
+import helper.Session;
 import model.CartItem;
 import model.ProductModel;
 
@@ -65,6 +66,13 @@ public class AddToCartView extends JFrame {
 			}
 		});
 		logout = new JButton("Logout");
+		logout.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Session.getSession().logout(AddToCartView.this);
+			}
+		});
 		
 		quantity = new JTextField();
 		

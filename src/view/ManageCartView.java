@@ -33,6 +33,7 @@ import javax.swing.table.TableCellRenderer;
 import connection.Connect;
 import controller.CartItemController;
 import controller.TransactionController;
+import helper.Session;
 import model.CartItem;
 import model.Transaction;
 
@@ -69,6 +70,13 @@ public class ManageCartView extends JFrame {
 		footerPanel = new JPanel(new GridLayout(1,2));
 		
 		logout = new JButton("Logout");
+		logout.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Session.getSession().logout(ManageCartView.this);
+			}
+		});
 		checkout = new JButton("Checkout");
 		money = new JTextField();
 		checkout.addActionListener(new ActionListener() {

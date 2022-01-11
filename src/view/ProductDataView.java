@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import controller.ProductController;
+import helper.Session;
 import model.ProductModel;
 
 public class ProductDataView extends JFrame{
@@ -54,6 +55,13 @@ public class ProductDataView extends JFrame{
 		productStockText.setColumns(5);
 		
 		logout = new JButton("Logout");
+		logout.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Session.getSession().logout(ProductDataView.this);
+			}
+		});
 		insertButton = new JButton("Insert");
 		insertButton.addActionListener(new ActionListener() {
 			@Override

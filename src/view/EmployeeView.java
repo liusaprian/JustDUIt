@@ -18,12 +18,11 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import controller.EmployeeController;
+import helper.Session;
 import model.EmployeeModel;
 
 public class EmployeeView extends JFrame{
-
 	
-	private static final long serialVersionUID = 1L;
 	private JPanel mainPanel, tablePanel, headerPanel, formPanel, buttonPanel, inputPanel;
 	private JTextField EmployeeIdText, EmployeeRole_IdText, EmployeeUsernameText, EmployeeNameText, EmployeeSalaryText, EmployeeStatusText, EmployeePasswordText;
 	private JButton logout, insertButton, updateButton;
@@ -56,8 +55,17 @@ public class EmployeeView extends JFrame{
 		EmployeeStatusText.setColumns(20);
 		EmployeeStatusText = new JTextField();
 		EmployeeStatusText.setColumns(20);
+		EmployeePasswordText = new JTextField();
+		EmployeePasswordText.setColumns(20);
 		
 		logout = new JButton("Logout");
+		logout.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Session.getSession().logout(EmployeeView.this);
+			}
+		});
 		insertButton = new JButton("Insert");
 		insertButton.addActionListener(new ActionListener() {
 			@Override
@@ -80,11 +88,14 @@ public class EmployeeView extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String id = EmployeeIdText.getText().toString();
+				String roleId = EmployeeRole_IdText.getText().toString();
 				String name = EmployeeNameText.getText().toString();
+				String username = EmployeeUsernameText.getText().toString();
+				String status = EmployeeStatusText.getText().toString();
 				String salary = EmployeeSalaryText.getText().toString();
 				String password = EmployeePasswordText.getText().toString();
 				
-				Employeec.updateEmployee(Integer.parseInt(id), name, salary, password);
+				Employeec.updateEmployee(Integer.parseInt(id), Integer.parseInt(roleId), name, username, status, Integer.parseInt("salary"), password);
 				Vector<EmployeeModel> updatedEmployees = new Vector<EmployeeModel>();  
 				updatedEmployees = Employeec.getAllEmployee();
 				prepareTableModel(updatedEmployees);

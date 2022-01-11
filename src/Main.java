@@ -1,20 +1,9 @@
-import controller.CartItemController;
-import controller.ProductController;
+import view.LoginView;
 
 public class Main {
 	
-//	private TransactionController transactionController = TransactionController.getInstance();
-	private CartItemController cartItemController = CartItemController.getInstance();
-	private ProductController productc;
-	String username = "customer";
-	
 	public Main() {
-//		transactionController.returnAdminTransactionReportView();
-		
-//		if(username == "customer" || username == "cashier") cartItemController.viewAddToCartForm();
-		
-		productc = ProductController.getProductController();
-		productc.getProductDataView();
+		new LoginView();
 	}
 
 	public static void main(String[] args) {
