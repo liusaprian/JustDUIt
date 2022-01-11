@@ -122,10 +122,12 @@ public class EmployeeModel {
 	public void insertEmployee(EmployeeModel employee) {
 		connect.executeUpdate("INSERT INTO employee VALUES("
 				+ "NULL,"
-				+ employee.getEmployeeName()+","
-				+ employee.getEmployeeUsername()+","
+				+ employee.getEmployeeRole_Id()+","
+				+ "'" + employee.getEmployeeName()+"',"
+				+ "'" + employee.getEmployeeUsername()+"',"
 				+ employee.getEmployeeSalary()+","
-				+ "'" + employee.getEmployeeRole_Id()+"',"
+				+ "'" + employee.getEmployeeStatus()+"',"
+				+ "'" + employee.getEmployeePassword()+"'"
 				+ ")");
 		
 	}
@@ -157,7 +159,7 @@ public class EmployeeModel {
 		ResultSet rs;
 		rs = connect.executeQuery("SELECT * FROM employee WHERE id = " + id);
 		try {
-			rs.next();
+			if(!rs.next()) return null;
 			return new EmployeeModel(id, rs.getInt("role_id"), rs.getString("name"), rs.getString("username"), rs.getString("status"), rs.getInt("salary"), rs.getString("password"));
 		} catch (SQLException e) {
 			e.printStackTrace();

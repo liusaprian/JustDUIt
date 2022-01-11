@@ -102,7 +102,7 @@ public class ProductModel {
 		ResultSet rs;
 		rs = connect.executeQuery("SELECT * FROM product WHERE id = " + productId);
 		try {
-			rs.next();
+			if(!rs.next()) return null;
 			return new ProductModel(productId, rs.getString("name"), rs.getString("description"), rs.getInt("price"), rs.getInt("stock"));
 		} catch (SQLException e) {
 			e.printStackTrace();

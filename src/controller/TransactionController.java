@@ -2,7 +2,10 @@ package controller;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Vector;
+
+import javax.swing.JFrame;
 
 import helper.Session;
 import model.CartItem;
@@ -10,6 +13,7 @@ import model.ProductModel;
 import model.Transaction;
 import model.TransactionItem;
 import view.TransactionDetailView;
+import view.TransactionHistoryView;
 import view.TransactionReportView;
 
 public class TransactionController {
@@ -17,7 +21,7 @@ public class TransactionController {
 	private static TransactionController controller = null;
 	private Transaction transaction;
 	private TransactionItem transactionItem;
-	private ProductModel product = ProductModel.getProductModel();
+	private ProductController productController = ProductController.getInstance();
 	
 	private TransactionController() {
 		transaction = Transaction.getTransaction();
@@ -35,9 +39,9 @@ public class TransactionController {
 			Transaction tr = transaction.addTransaction(new Date(System.currentTimeMillis()), employeeId, paymentType);
 			for(CartItem cartItem: carts) {
 				transactionItem.addTransactionItem(tr.getId(), cartItem.getProductId(), cartItem.getQuantity());
-				ProductModel p = product.getProduct(cartItem.getProductId());
+				ProductModel p = productController.getProduct(cartItem.getProductId());
 				p.setProdcutStock(p.getProdcutStock() - cartItem.getQuantity());
-				product.updateProduct(p);
+				productController.updateProduct(p.getProductId(), p.getProductName(), p.getProductDescription(), p.getProductPrice(), p.getProdcutStock());
 			}
 			return tr;
 		} catch (SQLException e) {
@@ -50,7 +54,7 @@ public class TransactionController {
 		return transaction.getAllTransactions(month, year);
 	}
 	
-	public Vector<TransactionItem> getAllTransactionItens(int id) {
+	public Vector<TransactionItem> getAllTransactionItems(int id) {
 		return transactionItem.getTransactionItems(id);
 	}
 	
@@ -58,15 +62,22 @@ public class TransactionController {
 		new TransactionReportView(month, year);
 	}
 	
-	public void viewTransactionDetail(int id) {
-		new TransactionDetailView(id);
+	public void viewTodayTransaction() {
+		new TransactionHistoryView();
 	}
 	
-//	public void viewTodayTransactionReport() {
-//		
-//	}
+	public Vector<Transaction> getTodayTransactionReport() {
+		Date currDate = new Date(System.currentTimeMillis());
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(currDate);
+		int month = cal.get(Calendar.MONTH);
+		int day = cal.get(Calendar.DAY_OF_MONTH);
+		int year = cal.get(Calendar.YEAR);
+		return transaction.getAllTransactions(day, month+1, year);
+	}
 	
-//	public Vector<Transaction> getTodayTransaction() {
-//		
-//	}
+	public void viewTransactionDetail(JFrame frame, int id) {
+		frame.dispose();
+		new TransactionDetailView(id);
+	}
 }

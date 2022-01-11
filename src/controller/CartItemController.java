@@ -15,9 +15,7 @@ public class CartItemController {
 	private Connect conn = Connect.getConnection();
 	
 	private Vector<CartItem> cart = new Vector<>(); 
-	private AddToCartView customerView = AddToCartView.getInstance();
-	private ManageCartView cashierView = ManageCartView.getInstance();
-	private ProductModel productModel = ProductModel.getProductModel();
+	private ProductController productController = ProductController.getInstance();
 	
 	private static CartItemController controller = null;
 	private CartItemController() {}
@@ -32,7 +30,7 @@ public class CartItemController {
 	}
 	
 	public CartItem addToCart(int id, int quantity) {
-		ProductModel product = productModel.getProduct(id);
+		ProductModel product = productController.getProduct(id);
 		if(product == null || product.getProdcutStock() < quantity) return null;
 		for (CartItem cartItem : cart)
 			if(cartItem.getProductId() == id) {
@@ -53,26 +51,26 @@ public class CartItemController {
 	public int cartTotalPrice() {
 		int total = 0;
 		for (CartItem cartItem : cart)
-			total += productModel.getProduct(cartItem.getProductId()).getProductPrice() * cartItem.getQuantity();
+			total += productController.getProduct(cartItem.getProductId()).getProductPrice() * cartItem.getQuantity();
 		return total;
 	}
 	
 	public void viewAddToCartForm() {
-		Vector<ProductModel> products = productModel.getAllProduct();
-		customerView.showAddToCartForm(products);
+		Vector<ProductModel> products = productController.getAllProduct();
+		new AddToCartView(products);
 	}
 	
 	public void viewManageCartForm(JFrame frame) {
 		frame.dispose();
-		cashierView.showManageCartForm(cart);
+		new ManageCartView(cart);
 	}
 	
 	public ProductModel getProductById(int id) {
-		return productModel.getProduct(id);
+		return productController.getProduct(id);
 	}
 	
 	public CartItem updateStock(CartItem cartItem, int quantity) {
-		int stock = productModel.getProduct(cartItem.getProductId()).getProdcutStock();
+		int stock = productController.getProduct(cartItem.getProductId()).getProdcutStock();
 		if(stock < quantity) return null;
 		cartItem.setQuantity(quantity);
 		return cartItem;

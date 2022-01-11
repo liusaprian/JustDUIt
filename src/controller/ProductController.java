@@ -31,6 +31,10 @@ public class ProductController {
 		new ProductDataView(productList);
 	}
 	
+	public ProductModel getProduct(int id) {
+		return productm.getProduct(id);
+	}
+	
 	public void addProduct(String name, String desc, Integer price, Integer stock) {
 		ProductModel tempProduct = new ProductModel(name, desc, price, stock);
 		productm.insertProduct(tempProduct);

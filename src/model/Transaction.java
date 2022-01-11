@@ -64,6 +64,10 @@ public class Transaction {
 		
 		if(month == null && year == null) {
 			rs = conn.executeQuery("SELECT * FROM transaction");
+		} else if(month == null && year != null) {
+			rs = conn.executeQuery("SELECT * FROM transaction WHERE YEAR(purchase_date) = " + year);
+		} else if(month != null && year == null) {
+			rs = conn.executeQuery("SELECT * FROM transaction WHERE MONTH(purchase_date) = " + month);
 		} else {
 			rs = conn.executeQuery("SELECT * FROM transaction WHERE MONTH(purchase_date) = " + month + " AND YEAR(purchase_date) = " + year);
 		}
@@ -79,7 +83,18 @@ public class Transaction {
 		return transactions;
 	}
 	
-//	public Vector<Transaction> getTransactionReport(Date date) {
-//		
-//	}
+	public Vector<Transaction> getAllTransactions(int day, int month, int year) {
+		ResultSet rs = 
+				conn.executeQuery("SELECT * FROM transaction WHERE DAY(purchase_date) = " + day + " AND MONTH(purchase_date) = " + month + " AND YEAR(purchase_date) = " + year);
+
+		Vector<Transaction> transactions = new Vector<>();
+		try {
+			while(rs.next()) 
+				transactions.add(new Transaction(rs.getInt("id"), rs.getInt("employee_id"), rs.getDate("purchase_date"), rs.getString("payment_type")));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return transactions;
+	}
 }

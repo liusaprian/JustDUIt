@@ -25,6 +25,7 @@ import javax.swing.table.TableCellRenderer;
 
 import connection.Connect;
 import controller.CartItemController;
+import controller.TransactionController;
 import helper.Session;
 import model.CartItem;
 import model.ProductModel;
@@ -33,20 +34,14 @@ public class AddToCartView extends JFrame {
 	private JPanel mainPanel, headerPanel, tablePanel;
 	private JTable table;
 	private JScrollPane scroll;
-	private JButton cart, logout;
+	private JButton cart, logout, history;
 	private JLabel cartItemCount;
 	private JTextField quantity;
-	
-	private static AddToCartView view = null;
-	
-	private AddToCartView() {}
-	
-	public static AddToCartView getInstance() {
-		if(view == null) view = new AddToCartView();
-		return view;
-	}
 
-	public void showAddToCartForm(Vector<ProductModel> products) {
+	private CartItemController cartController = CartItemController.getInstance();
+	private TransactionController transactionController = TransactionController.getInstance();
+	
+	public AddToCartView(Vector<ProductModel> products) {
 		setSize(1000, 600);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -56,12 +51,21 @@ public class AddToCartView extends JFrame {
 		tablePanel = new JPanel(new GridLayout(1,1));
 		headerPanel = new JPanel(new GridLayout(1,1));
 		
-		cart = new JButton("Cart (0)");
+		history = new JButton("History");
+		history.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AddToCartView.this.dispose();
+				transactionController.viewTodayTransaction();
+			}
+		});
+		
+		cart = new JButton("Cart ("+ cartController.cartItemCount() +")");
 		cart.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CartItemController cartController = CartItemController.getInstance();
 				cartController.viewManageCartForm(AddToCartView.this);
 			}
 		});
@@ -91,6 +95,7 @@ public class AddToCartView extends JFrame {
 		table.getColumn("Action").setCellEditor(new ButtonEditor(new JTextField()));
 		
 		headerPanel.add(cart);
+		headerPanel.add(history);
 		headerPanel.add(logout);
 		
 		mainPanel.add(headerPanel, BorderLayout.NORTH);
@@ -163,7 +168,6 @@ public class AddToCartView extends JFrame {
 				int option = JOptionPane.showConfirmDialog(btn, quantityInput, "Buy " + table.getValueAt(row, 1), JOptionPane.OK_CANCEL_OPTION);
 				if(option == JOptionPane.OK_OPTION) {
 					int qtyInputted = Integer.parseInt(quantity.getText());
-					CartItemController cartController = CartItemController.getInstance();
 					CartItem itemAdded = cartController.addToCart(Integer.parseInt(table.getValueAt(row, 0).toString()), qtyInputted);
 					if(itemAdded == null) 
 						JOptionPane.showMessageDialog(btn, "Product stock is not enough");

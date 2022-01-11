@@ -11,13 +11,16 @@ import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import controller.AdminController;
 import controller.EmployeeController;
+import controller.RoleController;
 import helper.Session;
 import model.EmployeeModel;
 
@@ -25,11 +28,12 @@ public class EmployeeView extends JFrame{
 	
 	private JPanel mainPanel, tablePanel, headerPanel, formPanel, buttonPanel, inputPanel;
 	private JTextField EmployeeIdText, EmployeeRole_IdText, EmployeeUsernameText, EmployeeNameText, EmployeeSalaryText, EmployeeStatusText, EmployeePasswordText;
-	private JButton logout, insertButton, updateButton, deleteButton;
+	private JButton logout, insertButton, updateButton, deleteButton, back;
 	private JTable table;
 	private JScrollPane scroll;
 	private EmployeeController Employeec;
-	private JLabel nameLabel, salaryLabel, passwordLabel;
+	private JLabel nameLabel, usernameLabel, salaryLabel, passwordLabel, roleLabel;
+	private RoleController roleController = RoleController.getInstance();
 	
 	public EmployeeView(Vector<EmployeeModel> EmployeeList) {
 		Employeec = EmployeeController.getInstance();
@@ -43,21 +47,21 @@ public class EmployeeView extends JFrame{
 		headerPanel = new JPanel(new GridLayout(1,1));
 		formPanel = new JPanel(new GridLayout(2,1));
 		buttonPanel = new JPanel();
-		inputPanel = new JPanel(); 
+		inputPanel = new JPanel(new GridLayout(5,1)); 
+		
+		nameLabel = new JLabel("Name");
+		usernameLabel = new JLabel("Username");
+		salaryLabel = new JLabel("Salary");
+		passwordLabel = new JLabel("Password");
+		roleLabel = new JLabel("Role (1. Cashier, 2.Product Staff, 3.HR Staff, 4. Manager)");
 		
 		EmployeeIdText = new JTextField();
 		EmployeeRole_IdText = new JTextField();
-		EmployeeRole_IdText.setColumns(2);
 		EmployeeNameText = new JTextField();
-		EmployeeNameText.setColumns(10);
 		EmployeeUsernameText = new JTextField();
-		EmployeeUsernameText.setColumns(10);
 		EmployeeSalaryText = new JTextField();
-		EmployeeSalaryText.setColumns(10);
 		EmployeeStatusText = new JTextField();
-		EmployeeStatusText.setColumns(10);
 		EmployeePasswordText = new JTextField();
-		EmployeePasswordText.setColumns(10);
 		
 		logout = new JButton("Logout");
 		logout.addActionListener(new ActionListener() {
@@ -76,9 +80,10 @@ public class EmployeeView extends JFrame{
 				String username = EmployeeUsernameText.getText().toString();
 				String salary = EmployeeSalaryText.getText().toString();
 				
-				
-				Employeec.addEmployee(username, name, Integer.parseInt(role_Id), Integer.parseInt(salary));
-				refresh();
+				if(validate(role_Id, name, username, salary)) {
+					Employeec.addEmployee(name, username, Integer.parseInt(salary), Integer.parseInt(role_Id));
+					refresh();
+				}
 			}
 		});
 		updateButton = new JButton("Update");
@@ -92,10 +97,12 @@ public class EmployeeView extends JFrame{
 				String username = EmployeeUsernameText.getText().toString();
 				String status = EmployeeStatusText.getText().toString();
 				String salary = EmployeeSalaryText.getText().toString();
-				String password = EmployeePasswordText.getText().toString();
+				String password = EmployeePasswordText.getText().toString().equals("") ? username : EmployeePasswordText.getText().toString();
 				
-				Employeec.updateEmployee(Integer.parseInt(id), Integer.parseInt(roleId), name, username, status, Integer.parseInt("salary"), password);
-				refresh();
+				if(validate(roleId, name, salary)) {
+					Employeec.updateEmployee(Integer.parseInt(id), Integer.parseInt(roleId), name, username, status, Integer.parseInt(salary), password);
+					refresh();
+				}
 			}
 		});
 		
@@ -110,13 +117,15 @@ public class EmployeeView extends JFrame{
 			}
 		});
 		
-		
-		inputPanel.add(EmployeeIdText);
+		inputPanel.add(roleLabel);
 		inputPanel.add(EmployeeRole_IdText);
+		inputPanel.add(nameLabel);
 		inputPanel.add(EmployeeNameText);
+		inputPanel.add(usernameLabel);
 		inputPanel.add(EmployeeUsernameText);
+		inputPanel.add(salaryLabel);
 		inputPanel.add(EmployeeSalaryText);
-		inputPanel.add(EmployeeStatusText);
+		inputPanel.add(passwordLabel);
 		inputPanel.add(EmployeePasswordText);
 		
 		buttonPanel.add(insertButton);
@@ -150,6 +159,19 @@ public class EmployeeView extends JFrame{
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		
 		tablePanel.add(scroll);
+
+		if(roleController.getRole(Session.getSession().getCurrentUser().getEmployeeRole_Id()).getName().equals("manager")) {
+			back = new JButton("Back");
+			back.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					EmployeeView.this.dispose();
+					AdminController.getInstance().getAdminMenu();
+				}
+			});
+			headerPanel.add(back);
+		}
 		
 		headerPanel.add(logout);
 		mainPanel.add(headerPanel, BorderLayout.NORTH);
@@ -181,5 +203,66 @@ public class EmployeeView extends JFrame{
 		Vector<EmployeeModel> updatedEmployees = new Vector<EmployeeModel>();  
 		updatedEmployees = Employeec.getAllEmployee();
 		prepareTableModel(updatedEmployees);
+	}
+	
+	public boolean validate(String roleId, String name, String username, String salary) {
+		if(roleId.equals("") || name.equals("") || username.equals("") || salary.equals("")) {
+			JOptionPane.showMessageDialog(null, "Fields must not be empty");
+			return false;
+		}
+		int roleIdNum, salaryNum;
+		try {
+			roleIdNum = Integer.parseInt(roleId);
+			salaryNum = Integer.parseInt(salary);
+		} catch(NumberFormatException e) {
+			EmployeeRole_IdText.setText("");
+			EmployeeSalaryText.setText("");
+			JOptionPane.showMessageDialog(null, "Role Id & Salary must be numeric");
+			return false;
+		}
+		if(roleController.getRole(roleIdNum) == null) {
+			EmployeeRole_IdText.setText("");
+			JOptionPane.showMessageDialog(null, "Role Id must exist");
+			return false;
+		}
+		if(Employeec.getEmployee(username) != null) {
+			EmployeeUsernameText.setText("");
+			JOptionPane.showMessageDialog(null, "Username must be unique");
+			return false;
+		}
+		if(salaryNum <= 0) {
+			EmployeeSalaryText.setText("");
+			JOptionPane.showMessageDialog(null, "Salary must be above zero");
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean validate(String roleId, String name, String salary) {
+		if(roleId.equals("") || name.equals("") || salary.equals("")) {
+			JOptionPane.showMessageDialog(null, "Fields must not be empty");
+			return false;
+		}
+		int roleIdNum, salaryNum;
+		try {
+			roleIdNum = Integer.parseInt(roleId);
+			salaryNum = Integer.parseInt(salary);
+		} catch(NumberFormatException e) {
+			EmployeeRole_IdText.setText("");
+			EmployeeSalaryText.setText("");
+			JOptionPane.showMessageDialog(null, "Role Id & Salary must be numeric");
+			return false;
+		}
+		if(roleController.getRole(roleIdNum) == null) {
+			EmployeeRole_IdText.setText("");
+			JOptionPane.showMessageDialog(null, "Role Id must exist");
+			return false;
+		}
+		if(salaryNum <= 0) {
+			EmployeeSalaryText.setText("");
+			JOptionPane.showMessageDialog(null, "Salary must be above zero");
+			return false;
+		}
+		return true;
 	}
 }

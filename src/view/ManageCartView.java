@@ -48,17 +48,8 @@ public class ManageCartView extends JFrame {
 	private TransactionController transactionController;
 	
 	String payment;
-	
-	private static ManageCartView view = null;
-	
-	private ManageCartView() {}
-	
-	public static ManageCartView getInstance() {
-		if(view == null) view = new ManageCartView();
-		return view;
-	}
 
-	public void showManageCartForm(Vector<CartItem> cart) {
+	public ManageCartView(Vector<CartItem> cart) {
 		setSize(1000, 600);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -93,29 +84,32 @@ public class ManageCartView extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Object[] options = {"Cash", "Credit Card"};
-				Object[] moneyInput = {"Your money: ", money};
-				Object answer = JOptionPane.showOptionDialog(null, moneyInput, "Payment", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-				if(Integer.parseInt(answer.toString()) == 0) payment = "cash";
-				else if(Integer.parseInt(answer.toString()) == 1) payment = "credit card";
-				
-				if(Integer.parseInt(answer.toString()) != -1) {
-					int option = JOptionPane.showConfirmDialog(null, "Confirm " + payment + " payment", "Checkout", JOptionPane.YES_NO_OPTION);
-					if(option == JOptionPane.YES_OPTION) {
-						if(Integer.parseInt(money.getText().toString()) - cartController.cartTotalPrice() < 0) {
-							JOptionPane.showMessageDialog(null, "Your money is not enough");
+				if(cartController.getListCartItem().isEmpty()) JOptionPane.showMessageDialog(null, "Empty Cart");
+				else {
+					Object[] options = {"Cash", "Credit Card"};
+					Object[] moneyInput = {"Your money: ", money};
+					Object answer = JOptionPane.showOptionDialog(null, moneyInput, "Payment", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+					if(Integer.parseInt(answer.toString()) == 0) payment = "cash";
+					else if(Integer.parseInt(answer.toString()) == 1) payment = "credit card";
+					
+					if(Integer.parseInt(answer.toString()) != -1) {
+						int option = JOptionPane.showConfirmDialog(null, "Confirm " + payment + " payment", "Checkout", JOptionPane.YES_NO_OPTION);
+						if(option == JOptionPane.YES_OPTION) {
+							if(Integer.parseInt(money.getText().toString()) - cartController.cartTotalPrice() < 0) {
+								JOptionPane.showMessageDialog(null, "Your money is not enough");
+							}
+							else {
+								transactionController = TransactionController.getInstance();
+								transactionController.insertTransaction(payment, cartController.getListCartItem());
+								int change = Integer.parseInt(money.getText().toString()) - cartController.cartTotalPrice();
+								cartController.clearCartItemList();
+								JOptionPane.showMessageDialog(null, "Checkout success with change Rp. " + change);
+				        		cartTotalPrice.setText("Total price: Rp. " + cartController.cartTotalPrice());
+							}
 						}
-						else {
-							transactionController = TransactionController.getInstance();
-							transactionController.insertTransaction(payment, cartController.getListCartItem());
-							int change = Integer.parseInt(money.getText().toString()) - cartController.cartTotalPrice();
-							cartController.clearCartItemList();
-							JOptionPane.showMessageDialog(null, "Checkout success with change Rp. " + change);
-			        		cartTotalPrice.setText("Total price: Rp. " + cartController.cartTotalPrice());
-						}
+						money.setText("");
+						prepareTableModel(cartController.getListCartItem());
 					}
-					money.setText("");
-					prepareTableModel(cartController.getListCartItem());
 				}
 			}
 		});
@@ -137,6 +131,7 @@ public class ManageCartView extends JFrame {
 		footerPanel.add(cartTotalPrice);
 		footerPanel.add(checkout);
 		
+		headerPanel.add(back);
 		headerPanel.add(logout);
 		
 		mainPanel.add(headerPanel, BorderLayout.NORTH);

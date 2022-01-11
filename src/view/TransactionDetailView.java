@@ -17,6 +17,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import connection.Connect;
+import controller.RoleController;
 import controller.TransactionController;
 import helper.Session;
 import model.Transaction;
@@ -31,6 +32,9 @@ public class TransactionDetailView extends JFrame{
 	private DefaultTableModel dtm;
 	
 	private TransactionController transactionController = TransactionController.getInstance();
+	private RoleController roleController = RoleController.getInstance();
+	
+	private String currentRole;
 
 	public TransactionDetailView(int id) {
 		setSize(1000, 600);
@@ -63,13 +67,16 @@ public class TransactionDetailView extends JFrame{
 			}
 		});
 		
-		viewTransactionReportButton = new JButton("View Transaction Report");
+		viewTransactionReportButton = new JButton("Back");
 		viewTransactionReportButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				TransactionDetailView.this.dispose();
-				transactionController.viewTransactionReport(null, null);
+				if(roleController.getRole(Session.getSession().getCurrentUser().getEmployeeRole_Id()).getName().equals("manager")) {
+					transactionController.viewTransactionReport(null, null);
+				}
+				else transactionController.viewTodayTransaction();
 			}
 		});
 		
@@ -85,7 +92,7 @@ public class TransactionDetailView extends JFrame{
 	}
 
 	private void viewTransactionItems(int id) {
-		Vector<TransactionItem> transactionItems = transactionController.getAllTransactionItens(id);
+		Vector<TransactionItem> transactionItems = transactionController.getAllTransactionItems(id);
 
 		for (TransactionItem transactionItem : transactionItems) {
 			Vector<Object> row = new Vector<Object>();

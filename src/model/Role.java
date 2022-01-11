@@ -57,7 +57,7 @@ public class Role {
 		ResultSet rs;
 		rs = conn.executeQuery("SELECT * FROM role WHERE id = " + id);
 		try {
-			rs.next();
+			if(!rs.next()) return null;
 			return new Role(id, rs.getString("name"));
 		} catch (SQLException e) {
 			e.printStackTrace();
