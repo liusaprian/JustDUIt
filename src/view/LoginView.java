@@ -14,7 +14,7 @@ import controller.AuthController;
 
 public class LoginView extends JFrame {
 	private JPanel mainPanel, titlePanel, formPanel, buttonPanel;
-	private JButton login, register;
+	private JButton login;
 	private JTextField username;
 	private JPasswordField password;
 	private JLabel title, usernameLabel, passwordLabel, msg;
@@ -29,7 +29,7 @@ public class LoginView extends JFrame {
 		mainPanel = new JPanel(new BorderLayout());
 		titlePanel = new JPanel(new GridLayout(2,1));
 		formPanel = new JPanel(new GridLayout(2,2));
-		buttonPanel = new JPanel(new GridLayout(1,2));
+		buttonPanel = new JPanel(new GridLayout(1,1));
 		
 		title = new JLabel("Login");
 		title.setHorizontalAlignment(JLabel.CENTER);
@@ -50,7 +50,6 @@ public class LoginView extends JFrame {
 				if(message == "Success Login") authController.navigateView(LoginView.this);
 			}
 		});
-		register = new JButton("Register");
 		
 		titlePanel.add(title);
 		titlePanel.add(msg);
@@ -59,7 +58,6 @@ public class LoginView extends JFrame {
 		formPanel.add(passwordLabel);
 		formPanel.add(password);
 		buttonPanel.add(login);
-		buttonPanel.add(register);
 		
 		mainPanel.add(titlePanel, BorderLayout.NORTH);
 		mainPanel.add(formPanel, BorderLayout.CENTER);

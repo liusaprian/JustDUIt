@@ -36,11 +36,6 @@ public class AuthController {
 		return "Success Login";
 	}
 	
-	public void goToRegister(JFrame frame) {
-		frame.dispose();
-		//register view
-	}
-	
 	public void navigateView(JFrame frame) {
 		frame.dispose();
 		Role role = roleController.getRole(session.getCurrentUser().getEmployeeRole_Id());
